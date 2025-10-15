@@ -2,6 +2,7 @@ import '../models/diet_profile.dart';
 
 /// Predefined dietary profiles with ingredient restrictions
 final List<DietProfile> predefinedProfiles = [
+  
   // VEGAN PROFILE
   DietProfile(
     id: 'vegan',

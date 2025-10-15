@@ -1,53 +1,103 @@
 import 'package:flutter/material.dart';
+import 'screens/scanner_screen.dart';
+import 'screens/profiles_screen.dart';
+import 'screens/settings_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const LabelScoutApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class LabelScoutApp extends StatelessWidget {
+  const LabelScoutApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Label Scout',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        // Color palette: B17F59, A5B68D, C1CFA1, EDE8DC
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFA5B68D), // Muted Green
+          primary: const Color(0xFFB17F59), // Warm Brown/Tan
+          secondary: const Color(0xFFA5B68D), // Muted Green
+          surface: const Color(0xFFEDE8DC), // Off-White/Cream
+        ),
+        scaffoldBackgroundColor: const Color(0xFFEDE8DC), // Off-White/Cream
+        cardTheme: CardTheme(
+          color: Colors.white,
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFFB17F59), // Warm Brown/Tan
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFB17F59), // Warm Brown/Tan
+            foregroundColor: Colors.white,
+          ),
+        ),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MainNavigationScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class MainNavigationScreen extends StatefulWidget {
+  const MainNavigationScreen({super.key});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
+  @override
+  State<MainNavigationScreen> createState() => _MainNavigationScreenState();
+}
 
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
+class _MainNavigationScreenState extends State<MainNavigationScreen> {
+  int _currentIndex = 0;
 
-  final String title;
+  // The three main screens for the bottom navigation
+  final List<Widget> _screens = const [
+    ScannerScreen(),
+    ProfilesScreen(),
+    SettingsScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        selectedItemColor: const Color(0xFFB17F59), // Warm Brown/Tan
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.qr_code_scanner),
+            label: 'Scanner',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profiles',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();

@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/diet_profile.dart';
+
 import '../data/predefined_profiles.dart';
+import '../models/diet_profile.dart';
 
 /// Service for managing dietary profiles and persisting user preferences
 class ProfileService {

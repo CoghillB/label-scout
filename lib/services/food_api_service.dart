@@ -44,7 +44,7 @@ class FoodApiService {
   }
   
   /// Extracts the ingredients text from the API response
-  /// 
+  ///
   /// Returns the ingredients as a string, or null if not available
   String? getIngredientsText(Map<String, dynamic> productData) {
     try {
