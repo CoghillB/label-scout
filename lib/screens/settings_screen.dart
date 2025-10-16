@@ -88,7 +88,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             trailing: Switch(
               value: _isProUser,
               onChanged: (value) => _toggleProStatus(),
-              activeColor: Colors.amber,
+              activeTrackColor: Colors.amber,
             ),
           ),
           
@@ -191,7 +191,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Card(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               child: const Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Column(

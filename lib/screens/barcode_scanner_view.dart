@@ -133,9 +133,12 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scan Barcode'),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        title: const Text(
+          'Scan Barcode',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: const Color(0xFFA5B68D), // Muted Green
+        foregroundColor: Colors.black,
       ),
       body: Stack(
         children: [

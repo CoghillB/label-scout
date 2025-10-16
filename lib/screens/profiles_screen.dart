@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/diet_profile.dart';
 import '../services/profile_service.dart';
 
@@ -174,7 +175,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                       child: Row(
                         children: [
                           Icon(

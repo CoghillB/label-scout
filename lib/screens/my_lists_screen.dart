@@ -97,7 +97,7 @@ class _MyListsScreenState extends State<MyListsScreen> with SingleTickerProvider
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -217,8 +217,8 @@ class _MyListsScreenState extends State<MyListsScreen> with SingleTickerProvider
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: status == 'safe' 
-              ? Colors.green.withOpacity(0.2)
-              : Colors.red.withOpacity(0.2),
+              ? Colors.green.withValues(alpha: 0.2)
+              : Colors.red.withValues(alpha: 0.2),
           child: Icon(
             status == 'safe' ? Icons.check : Icons.close,
             color: status == 'safe' ? Colors.green : Colors.red,
@@ -239,7 +239,7 @@ class _MyListsScreenState extends State<MyListsScreen> with SingleTickerProvider
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(

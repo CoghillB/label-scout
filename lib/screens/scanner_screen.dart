@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'barcode_scanner_view.dart';
 
 /// Main scanner screen with a button to launch the barcode scanner
@@ -21,7 +22,7 @@ class ScannerScreen extends StatelessWidget {
               Icon(
                 Icons.qr_code_scanner,
                 size: 120,
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
               ),
               const SizedBox(height: 32),
               
@@ -75,7 +76,7 @@ class ScannerScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
