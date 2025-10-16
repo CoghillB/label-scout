@@ -1,8 +1,47 @@
 import 'package:flutter/material.dart';
 
-/// Settings screen placeholder for future features
-class SettingsScreen extends StatelessWidget {
+import '../services/pro_status_service.dart';
+import 'my_lists_screen.dart';
+import 'upgrade_screen.dart';
+
+/// Settings screen for app configuration and feature access
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  final ProStatusService _proStatusService = ProStatusService();
+  bool _isProUser = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProStatus();
+  }
+
+  Future<void> _loadProStatus() async {
+    final isPro = await _proStatusService.isProUser();
+    setState(() {
+      _isProUser = isPro;
+    });
+  }
+
+  Future<void> _toggleProStatus() async {
+    await _proStatusService.toggleProStatus();
+    await _loadProStatus();
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_isProUser ? 'Pro features enabled' : 'Pro features disabled'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +64,81 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
           
-          // TODO: Future settings options
+          // Pro Features Section
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: Text(
+              'PRO FEATURES',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[600],
+              ),
+            ),
+          ),
+          
+          // Pro Status Toggle (for testing)
+          ListTile(
+            leading: Icon(
+              _isProUser ? Icons.star : Icons.star_border,
+              color: _isProUser ? Colors.amber : null,
+            ),
+            title: const Text('Pro Status (Test Toggle)'),
+            subtitle: Text(_isProUser ? 'Pro features enabled' : 'Free version'),
+            trailing: Switch(
+              value: _isProUser,
+              onChanged: (value) => _toggleProStatus(),
+              activeColor: Colors.amber,
+            ),
+          ),
+          
+          ListTile(
+            leading: Icon(
+              Icons.list_alt,
+              color: _isProUser ? Theme.of(context).colorScheme.primary : Colors.grey,
+            ),
+            title: const Text('My Lists'),
+            subtitle: Text(_isProUser ? 'View your saved items' : 'Pro feature'),
+            trailing: _isProUser 
+                ? const Icon(Icons.chevron_right) 
+                : const Icon(Icons.lock, size: 20),
+            enabled: _isProUser,
+            onTap: _isProUser
+                ? () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MyListsScreen()),
+                    );
+                  }
+                : null,
+          ),
+          
+          ListTile(
+            leading: const Icon(Icons.history),
+            title: const Text('Scan History'),
+            subtitle: const Text('Coming soon - Pro feature'),
+            trailing: const Icon(Icons.lock, size: 20),
+            enabled: false,
+            onTap: () {
+              // TODO: Navigate to scan history (Pro feature)
+            },
+          ),
+          
+          const Divider(),
+          
+          // General Settings
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: Text(
+              'GENERAL',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[600],
+              ),
+            ),
+          ),
+          
           ListTile(
             leading: const Icon(Icons.notifications_outlined),
             title: const Text('Notifications'),
@@ -36,37 +149,25 @@ class SettingsScreen extends StatelessWidget {
               // TODO: Navigate to notifications settings
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.history),
-            title: const Text('Scan History'),
-            subtitle: const Text('Coming soon - Pro feature'),
-            trailing: const Icon(Icons.chevron_right),
-            enabled: false,
-            onTap: () {
-              // TODO: Navigate to scan history (Pro feature)
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.list_alt),
-            title: const Text('My Lists'),
-            subtitle: const Text('Coming soon - Pro feature'),
-            trailing: const Icon(Icons.chevron_right),
-            enabled: false,
-            onTap: () {
-              // TODO: Navigate to My Lists (Pro feature)
-            },
-          ),
+          
           const Divider(),
-          ListTile(
-            leading: const Icon(Icons.star_outline),
-            title: const Text('Upgrade to Pro'),
-            subtitle: const Text('Coming soon'),
-            trailing: const Icon(Icons.chevron_right),
-            enabled: false,
-            onTap: () {
-              // TODO: Navigate to upgrade screen
-            },
-          ),
+          
+          // Upgrade Section
+          if (!_isProUser) ...[
+            ListTile(
+              leading: const Icon(Icons.star, color: Colors.amber),
+              title: const Text('Upgrade to Pro'),
+              subtitle: const Text('Unlock all premium features'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const UpgradeScreen()),
+                );
+              },
+            ),
+            const Divider(),
+          ],
           ListTile(
             leading: const Icon(Icons.help_outline),
             title: const Text('Help & Support'),

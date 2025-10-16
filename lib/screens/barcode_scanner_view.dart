@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+
 import '../services/food_api_service.dart';
 import '../services/profile_service.dart';
+import 'result_screen.dart';
 
 /// Full-screen barcode scanner view using the device camera
 class BarcodeScannerView extends StatefulWidget {
@@ -54,13 +56,27 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
       
       // Extract product information
       final productName = _foodApiService.getProductName(productData) ?? 'Unknown Product';
-      final brand = _foodApiService.getProductBrand(productData);
+      final brand = _foodApiService.getProductBrand(productData) ?? 'Unknown Brand';
       final ingredientsText = _foodApiService.getIngredientsText(productData);
       
+      // TODO: In future versions, analyze ingredients against the active profile
+      // For now, we'll use a simple placeholder status
+      final status = 'safe'; // This should be calculated based on ingredient analysis
+      
       if (mounted) {
-        // TODO: In future versions, this will analyze ingredients against the active profile
-        // and show a detailed result screen with flagged ingredients
-        _showProductInfoDialog(productName, brand, ingredientsText);
+        // Navigate to result screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ResultScreen(
+              barcode: barcodeValue,
+              productName: productName,
+              brand: brand,
+              ingredientsText: ingredientsText,
+              status: status,
+            ),
+          ),
+        );
       }
       
     } catch (e) {
@@ -90,61 +106,6 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
               Navigator.pop(context); // Return to scanner screen
             },
             child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Shows basic product information dialog
-  /// TODO: Replace with detailed result screen showing ingredient analysis
-  void _showProductInfoDialog(String name, String? brand, String? ingredients) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(name),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (brand != null) ...[
-                Text(
-                  'Brand: $brand',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 12),
-              ],
-              if (ingredients != null) ...[
-                const Text(
-                  'Ingredients:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Text(ingredients),
-                const SizedBox(height: 16),
-              ] else ...[
-                const Text(
-                  'No ingredient information available for this product.',
-                  style: TextStyle(fontStyle: FontStyle.italic),
-                ),
-              ],
-              const Divider(),
-              const SizedBox(height: 8),
-              const Text(
-                '⚠️ MVP Version: Ingredient analysis coming soon!',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.orange,
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
           ),
         ],
       ),
