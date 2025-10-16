@@ -1,11 +1,24 @@
 import 'package:flutter/material.dart';
 
+import '../services/iap_service.dart';
+
 /// Screen displaying Pro features and upgrade benefits
 class UpgradeScreen extends StatelessWidget {
   const UpgradeScreen({super.key});
 
+  Future<void> _handlePurchase(BuildContext context) async {
+    final iapService = IAPService();
+    final success = await iapService.showPurchaseDialog(context);
+    
+    if (success && context.mounted) {
+      // Navigate back after successful purchase
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final iapService = IAPService();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Upgrade to Pro'),
@@ -112,24 +125,71 @@ class UpgradeScreen extends StatelessWidget {
             
             const SizedBox(height: 32),
             
+            // Price display
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.green, width: 2),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      iapService.getProPrice(),
+                      style: const TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Monthly',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          'Subscription',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            
+            const SizedBox(height: 24),
+            
             // Upgrade button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Implement IAP integration
-                    _showComingSoonDialog(context);
-                  },
+                  onPressed: () => _handlePurchase(context),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
                   ),
                   child: const Text(
-                    'Upgrade Now',
+                    'Purchase Now',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -142,7 +202,7 @@ class UpgradeScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                '💡 In-app purchases coming soon!',
+                '💡 Simulated purchase for testing',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[600],
@@ -209,24 +269,6 @@ class UpgradeScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _showComingSoonDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Coming Soon'),
-        content: const Text(
-          'In-app purchases will be available in a future update. Stay tuned!',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
       ),
     );
   }

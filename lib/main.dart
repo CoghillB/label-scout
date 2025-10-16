@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'screens/history_screen.dart';
 import 'screens/profiles_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'screens/settings_screen.dart';
@@ -169,10 +170,11 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
-  // The three main screens for the bottom navigation
+  // The four main screens for the bottom navigation
   final List<Widget> _screens = const [
     ScannerScreen(),
     ProfilesScreen(),
+    HistoryScreen(),
     SettingsScreen(),
   ];
 
@@ -187,6 +189,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             _currentIndex = index;
           });
         },
+        type: BottomNavigationBarType.fixed, // Needed for 4+ items
         selectedItemColor: const Color(0xFFB17F59), // Warm Brown/Tan
         unselectedItemColor: Colors.grey,
         items: const [
@@ -197,6 +200,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profiles',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history),
+            label: 'History',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),

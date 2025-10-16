@@ -1,10 +1,12 @@
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/saved_food_item.dart';
+import '../models/scan_history_item.dart';
 
-/// Service for managing saved food items in the local Hive database
+/// Service for managing saved food items and scan history in the local Hive database
 class HiveService {
   static const String _savedItemsBoxName = 'savedFoodItems';
+  static const String _scanHistoryBoxName = 'scanHistory';
   
   /// Initializes Hive and registers adapters
   static Future<void> initialize() async {
@@ -15,13 +17,26 @@ class HiveService {
       Hive.registerAdapter(SavedFoodItemAdapter());
     }
     
+    // Register the ScanHistoryItem adapter
+    if (!Hive.isAdapterRegistered(1)) {
+      Hive.registerAdapter(ScanHistoryItemAdapter());
+    }
+    
     // Open the saved items box
     await Hive.openBox<SavedFoodItem>(_savedItemsBoxName);
+    
+    // Open the scan history box
+    await Hive.openBox<ScanHistoryItem>(_scanHistoryBoxName);
   }
   
   /// Gets the saved items box
   Box<SavedFoodItem> _getSavedItemsBox() {
     return Hive.box<SavedFoodItem>(_savedItemsBoxName);
+  }
+  
+  /// Gets the scan history box
+  Box<ScanHistoryItem> _getScanHistoryBox() {
+    return Hive.box<ScanHistoryItem>(_scanHistoryBoxName);
   }
   
   /// Saves a food item to the database
@@ -97,6 +112,78 @@ class HiveService {
   Future<void> deleteAllItems() async {
     final box = _getSavedItemsBox();
     await box.clear();
+  }
+  
+  // ============================================================================
+  // SCAN HISTORY METHODS
+  // ============================================================================
+  
+  /// Saves a scan history record
+  /// Uses timestamp as key for chronological ordering
+  Future<void> saveScanHistory(ScanHistoryItem item) async {
+    final box = _getScanHistoryBox();
+    // Use timestamp as key for automatic chronological ordering
+    await box.add(item);
+  }
+  
+  /// Gets all scan history items, sorted by date (newest first)
+  List<ScanHistoryItem> getAllScanHistory() {
+    final box = _getScanHistoryBox();
+    final items = box.values.toList();
+    // Sort by scan date descending (newest first)
+    items.sort((a, b) => b.scanDate.compareTo(a.scanDate));
+    return items;
+  }
+  
+  /// Gets scan history for a specific date range
+  List<ScanHistoryItem> getScanHistoryByDateRange(DateTime start, DateTime end) {
+    final box = _getScanHistoryBox();
+    return box.values
+        .where((item) => 
+            item.scanDate.isAfter(start) && 
+            item.scanDate.isBefore(end))
+        .toList()
+      ..sort((a, b) => b.scanDate.compareTo(a.scanDate));
+  }
+  
+  /// Gets scan history filtered by result status
+  List<ScanHistoryItem> getScanHistoryByStatus(String status) {
+    final box = _getScanHistoryBox();
+    return box.values
+        .where((item) => item.resultStatus.toUpperCase() == status.toUpperCase())
+        .toList()
+      ..sort((a, b) => b.scanDate.compareTo(a.scanDate));
+  }
+  
+  /// Deletes a specific scan history item
+  Future<void> deleteScanHistoryItem(ScanHistoryItem item) async {
+    await item.delete();
+  }
+  
+  /// Clears all scan history
+  Future<void> clearScanHistory() async {
+    final box = _getScanHistoryBox();
+    await box.clear();
+  }
+  
+  /// Gets the count of scans today
+  int getScansToday() {
+    final box = _getScanHistoryBox();
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
+    
+    return box.values
+        .where((item) => 
+            item.scanDate.isAfter(startOfDay) && 
+            item.scanDate.isBefore(endOfDay))
+        .length;
+  }
+  
+  /// Gets total scan count
+  int getTotalScans() {
+    final box = _getScanHistoryBox();
+    return box.length;
   }
   
   /// Closes all Hive boxes

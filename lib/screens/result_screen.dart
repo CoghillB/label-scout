@@ -4,6 +4,7 @@ import '../data/food_categories.dart';
 import '../models/saved_food_item.dart';
 import '../services/hive_service.dart';
 import '../services/pro_status_service.dart';
+import '../widgets/ad_placeholder.dart';
 import 'upgrade_screen.dart';
 
 /// Result screen showing product information after scanning
@@ -195,6 +196,12 @@ class _ResultScreenState extends State<ResultScreen> {
             ),
             
             const SizedBox(height: 16),
+            
+            // Ad placeholder (shown only for free users)
+            const AdPlaceholder(
+              size: AdSize.banner,
+              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            ),
             
             // Product information
             Padding(

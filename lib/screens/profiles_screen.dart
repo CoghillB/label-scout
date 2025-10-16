@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../models/diet_profile.dart';
+import '../services/pro_status_service.dart';
 import '../services/profile_service.dart';
+import 'upgrade_screen.dart';
 
-/// Screen displaying dietary profiles with radio button selection
+/// Screen displaying dietary profiles with single or multiple selection based on Pro status
 class ProfilesScreen extends StatefulWidget {
   const ProfilesScreen({super.key});
 
@@ -13,27 +15,33 @@ class ProfilesScreen extends StatefulWidget {
 
 class _ProfilesScreenState extends State<ProfilesScreen> {
   final ProfileService _profileService = ProfileService();
+  final ProStatusService _proStatusService = ProStatusService();
   List<DietProfile> _profiles = [];
   bool _isLoading = true;
+  bool _isProUser = false;
   String? _error;
 
   @override
   void initState() {
     super.initState();
-    _loadProfiles();
+    _loadData();
   }
 
-  /// Loads all profiles with their active state
-  Future<void> _loadProfiles() async {
+  /// Loads profiles and Pro status
+  Future<void> _loadData() async {
     try {
       setState(() {
         _isLoading = true;
         _error = null;
       });
 
-      final profiles = await _profileService.getAllProfiles();
+      final isPro = await _proStatusService.isProUser();
+      final profiles = isPro
+          ? await _profileService.getAllProfilesWithMultipleActive()
+          : await _profileService.getAllProfiles();
 
       setState(() {
+        _isProUser = isPro;
         _profiles = profiles;
         _isLoading = false;
       });
@@ -45,18 +53,30 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
     }
   }
 
-  /// Activates a profile and updates the UI
+  /// Activates a profile and updates the UI (for free users - single profile)
   Future<void> _activateProfile(String profileId) async {
     try {
-      await _profileService.activateProfile(profileId);
+      if (_isProUser) {
+        // Pro users can toggle multiple profiles
+        final profile = _profiles.firstWhere((p) => p.id == profileId);
+        await _profileService.toggleProfileActive(profileId, !profile.isActive);
+      } else {
+        // Free users can only have one active profile
+        await _profileService.activateProfile(profileId);
+      }
       
       // Reload profiles to update active state
-      await _loadProfiles();
+      await _loadData();
       
       if (mounted) {
+        final activeCount = await _profileService.getActiveProfileCount();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Profile activated: ${_getProfileName(profileId)}'),
+            content: Text(
+              _isProUser
+                  ? '$activeCount profile(s) active'
+                  : 'Profile activated: ${_getProfileName(profileId)}',
+            ),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -65,7 +85,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error activating profile: $e'),
+            content: Text('Error updating profile: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -163,7 +183,7 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
                       Text(_error!),
                       const SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: _loadProfiles,
+                        onPressed: _loadData,
                         child: const Text('Retry'),
                       ),
                     ],
@@ -179,16 +199,30 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
                       child: Row(
                         children: [
                           Icon(
-                            Icons.info_outline,
-                            color: Theme.of(context).colorScheme.primary,
+                            _isProUser ? Icons.star : Icons.info_outline,
+                            color: _isProUser ? Colors.amber : Theme.of(context).colorScheme.primary,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Select one dietary profile to use when scanning products',
+                              _isProUser
+                                  ? 'Pro: Select multiple dietary profiles to scan against'
+                                  : 'Select one dietary profile to use when scanning products',
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
                           ),
+                          if (!_isProUser)
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const UpgradeScreen(),
+                                  ),
+                                ).then((_) => _loadData());
+                              },
+                              child: const Text('Upgrade'),
+                            ),
                         ],
                       ),
                     ),
@@ -206,31 +240,63 @@ class _ProfilesScreenState extends State<ProfilesScreen> {
                               vertical: 6,
                             ),
                             child: ListTile(
-                              leading: Radio<String>(
-                                value: profile.id,
-                                groupValue: _profiles
-                                    .firstWhere(
-                                      (p) => p.isActive,
-                                      orElse: () => DietProfile(
-                                        id: '',
-                                        name: '',
-                                        avoidIngredients: [],
-                                        cautionIngredients: [],
-                                      ),
+                              leading: _isProUser
+                                  ? Checkbox(
+                                      value: profile.isActive,
+                                      onChanged: (value) {
+                                        _activateProfile(profile.id);
+                                      },
                                     )
-                                    .id,
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    _activateProfile(value);
-                                  }
-                                },
-                              ),
-                              title: Text(
-                                profile.name,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
+                                  : Radio<String>(
+                                      value: profile.id,
+                                      groupValue: _profiles
+                                          .firstWhere(
+                                            (p) => p.isActive,
+                                            orElse: () => DietProfile(
+                                              id: '',
+                                              name: '',
+                                              avoidIngredients: [],
+                                              cautionIngredients: [],
+                                            ),
+                                          )
+                                          .id,
+                                      onChanged: (value) {
+                                        if (value != null) {
+                                          _activateProfile(value);
+                                        }
+                                      },
+                                    ),
+                              title: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      profile.name,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                  if (profile.isActive)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.green,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Text(
+                                        'ACTIVE',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
                               subtitle: Text(
                                 '${profile.avoidIngredients.length} ingredients to avoid',

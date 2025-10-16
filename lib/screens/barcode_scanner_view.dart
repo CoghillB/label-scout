@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+import '../models/scan_history_item.dart';
 import '../services/food_api_service.dart';
+import '../services/haptic_service.dart';
+import '../services/hive_service.dart';
+import '../services/ingredient_analysis_service.dart';
+import '../services/pro_status_service.dart';
 import '../services/profile_service.dart';
 import 'result_screen.dart';
 
@@ -16,7 +21,10 @@ class BarcodeScannerView extends StatefulWidget {
 class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   final MobileScannerController _controller = MobileScannerController();
   final FoodApiService _foodApiService = FoodApiService();
+  final HiveService _hiveService = HiveService();
   final ProfileService _profileService = ProfileService();
+  final ProStatusService _proStatusService = ProStatusService();
+  final IngredientAnalysisService _analysisService = IngredientAnalysisService();
   
   bool _isProcessing = false;
 
@@ -41,10 +49,11 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     final barcodeValue = barcode.rawValue!;
     
     try {
-      // Check if a profile is active
-      final activeProfile = await _profileService.getActiveProfile();
+      // Check Pro status and get active profiles
+      final isPro = await _proStatusService.isProUser();
+      final activeProfiles = await _profileService.getActiveProfiles();
       
-      if (activeProfile == null) {
+      if (activeProfiles.isEmpty) {
         if (mounted) {
           _showNoProfileDialog();
         }
@@ -59,9 +68,43 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
       final brand = _foodApiService.getProductBrand(productData) ?? 'Unknown Brand';
       final ingredientsText = _foodApiService.getIngredientsText(productData);
       
-      // TODO: In future versions, analyze ingredients against the active profile
-      // For now, we'll use a simple placeholder status
-      final status = 'safe'; // This should be calculated based on ingredient analysis
+      // Analyze ingredients against profile(s)
+      final status = isPro
+          ? _analysisService.analyzeAgainstMultipleProfiles(ingredientsText, activeProfiles)
+          : _analysisService.analyzeAgainstProfile(ingredientsText, activeProfiles.first);
+      
+      // Get flagged ingredients for history
+      List<String> flaggedIngredients;
+      if (isPro) {
+        final flaggedMap = _analysisService.getFlaggedIngredientsMultiProfile(ingredientsText, activeProfiles);
+        // Flatten all flagged ingredients from all profiles into a single list
+        flaggedIngredients = flaggedMap.values.expand((list) => list).toSet().toList();
+      } else {
+        flaggedIngredients = _analysisService.getFlaggedIngredients(ingredientsText, activeProfiles.first);
+      }
+      
+      // Save to scan history
+      final historyItem = ScanHistoryItem(
+        barcode: barcodeValue,
+        productName: productName,
+        scanDate: DateTime.now(),
+        resultStatus: status.toUpperCase(),
+        flaggedIngredients: flaggedIngredients,
+        brand: brand,
+        imageUrl: null, // Optional: Add getImageUrl method to FoodApiService if needed
+      );
+      await _hiveService.saveScanHistory(historyItem);
+      
+      // Provide haptic feedback based on result
+      if (status.toUpperCase() == 'SAFE') {
+        await HapticService.success();
+      } else if (status.toUpperCase() == 'AVOID') {
+        await HapticService.error();
+      } else if (status.toUpperCase() == 'CAUTION') {
+        await HapticService.warning();
+      } else {
+        await HapticService.lightImpact();
+      }
       
       if (mounted) {
         // Navigate to result screen
