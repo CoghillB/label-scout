@@ -12,6 +12,11 @@
 .swiftpm/
 migrate_working_dir/
 
+# Keystore files - DO NOT COMMIT THESE
+*.jks
+*.keystore
+key.properties
+
 # IntelliJ related
 *.iml
 *.ipr

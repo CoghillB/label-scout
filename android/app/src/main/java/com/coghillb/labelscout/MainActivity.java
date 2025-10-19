@@ -1,4 +1,4 @@
-package com.example.label_scout;
+package com.coghillb.labelscout;
 
 import io.flutter.embedding.android.FlutterActivity;
 

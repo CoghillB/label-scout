@@ -51,37 +51,48 @@ class _AdPlaceholderState extends State<AdPlaceholder> {
     
     return Container(
       margin: widget.margin ?? const EdgeInsets.symmetric(vertical: 8),
-      width: dimensions.width,
-      height: dimensions.height,
+      constraints: BoxConstraints(
+        maxWidth: dimensions.width == double.infinity 
+            ? double.infinity 
+            : dimensions.width,
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
         color: Colors.grey[200],
         border: Border.all(color: Colors.grey[400]!),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Column(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.ads_click,
-            size: 32,
+            size: 24,
             color: Colors.grey[600],
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Advertisement',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '(Placeholder - removed with Pro)',
-            style: TextStyle(
-              fontSize: 10,
-              color: Colors.grey[500],
-              fontStyle: FontStyle.italic,
+          const SizedBox(width: 8),
+          Flexible(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Advertisement',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  '(Placeholder - removed with Pro)',
+                  style: TextStyle(
+                    fontSize: 9,
+                    color: Colors.grey[500],
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
 /// Service for fetching food product data from Open Food Facts API
@@ -103,6 +104,70 @@ class FoodApiService {
           .toList();
     } catch (e) {
       return null;
+    }
+  }
+
+  /// Extracts the product image URL from the API response
+  String? getImageUrl(Map<String, dynamic> productData) {
+    try {
+      final product = productData['product'] as Map<String, dynamic>?;
+      if (product == null) return null;
+
+      // Try different image fields in order of preference
+      return product['image_url'] as String? ??
+          product['image_front_url'] as String? ??
+          product['image_small_url'] as String?;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Searches for products by name using Open Food Facts API
+  /// 
+  /// Returns a list of product data maps
+  /// Throws an exception if the request fails
+  Future<List<Map<String, dynamic>>> searchProducts(String searchTerm) async {
+    try {
+      // Use the CGI search endpoint which properly filters by search term
+      final url = Uri.parse('https://world.openfoodfacts.org/cgi/search.pl').replace(
+        queryParameters: {
+          'search_terms': searchTerm,
+          'json': 'true',
+          'page_size': '20',
+          'fields': 'code,product_name,product_name_en,brands,ingredients_text,ingredients_text_en,image_url,image_front_url,image_small_url',
+        },
+      );
+
+      final response = await http.get(
+        url,
+        headers: {
+          'User-Agent': 'LabelScout - Flutter App - Version 1.0',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        final products = data['products'] as List?;
+
+        if (products == null || products.isEmpty) {
+          return [];
+        }
+
+        // Convert to list of maps and wrap each product
+        return products.map((product) {
+          return {
+            'product': product as Map<String, dynamic>,
+            'code': product['code'],
+          };
+        }).toList();
+      } else {
+        throw Exception('Failed to search products: HTTP ${response.statusCode}');
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Error searching products: $e');
     }
   }
   

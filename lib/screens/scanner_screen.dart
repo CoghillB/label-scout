@@ -13,12 +13,13 @@ class ScannerScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Scanner'),
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
+              const SizedBox(height: 40), // Top spacing to center content when there's space
               // Icon for visual appeal
               Icon(
                 Icons.qr_code_scanner,
@@ -102,6 +103,7 @@ class ScannerScreen extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 40), // Bottom spacing
             ],
           ),
         ),

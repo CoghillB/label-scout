@@ -126,6 +126,107 @@ final List<DietProfile> predefinedProfiles = [
       'energy bars', 'protein bars',
     ],
   ),
+
+  // PREGNANCY-SAFE PROFILE
+  DietProfile(
+    id: 'pregnancy',
+    name: 'Pregnancy-Safe',
+    avoidIngredients: [
+      // High-mercury fish (FDA/EPA warning)
+      'shark', 'swordfish', 'king mackerel', 'tilefish', 'bigeye tuna',
+      'marlin', 'orange roughy', 'gulf tilefish',
+      // Raw/undercooked seafood & meat
+      'raw fish', 'sushi', 'sashimi', 'raw oysters', 'raw clams', 
+      'raw scallops', 'ceviche', 'raw shrimp', 'smoked salmon', 'lox',
+      'nova', 'gravlax', 'refrigerated smoked seafood',
+      'raw meat', 'rare meat', 'tartare', 'carpaccio', 'raw beef',
+      'raw pork', 'undercooked poultry',
+      // Raw/undercooked eggs
+      'raw eggs', 'soft-boiled eggs', 'runny eggs', 'homemade mayonnaise',
+      'hollandaise sauce', 'caesar dressing', 'raw cookie dough',
+      'raw cake batter', 'tiramisu', 'homemade ice cream with raw eggs',
+      // Unpasteurized products
+      'unpasteurized milk', 'raw milk', 'unpasteurized cheese', 
+      'unpasteurized juice', 'raw apple cider',
+      // Soft cheeses (listeria risk)
+      'brie', 'camembert', 'roquefort', 'feta', 'gorgonzola', 'queso blanco',
+      'queso fresco', 'panela', 'fresh mozzarella',
+      // Deli meats & prepared meats (unless heated)
+      'cold deli meat', 'cold cuts', 'lunch meat', 'hot dogs', 'bologna',
+      'salami', 'pepperoni', 'prosciutto', 'pâté', 'meat spreads',
+      'refrigerated pâté', 'refrigerated meat spread',
+      // Alcohol (complete avoidance)
+      'alcohol', 'wine', 'beer', 'liquor', 'spirits', 'rum', 'vodka',
+      'whiskey', 'bourbon', 'gin', 'tequila', 'sake', 'champagne',
+      'cooking wine', 'sherry', 'rum extract', 'brandy',
+      // Excessive caffeine sources
+      'energy drink', 'pre-workout supplement', 'diet pills',
+      // Raw sprouts (bacterial risk)
+      'raw alfalfa sprouts', 'raw clover sprouts', 'raw radish sprouts',
+      'raw mung bean sprouts', 'raw sprouts',
+      // Unwashed produce indicators
+      'unwashed', 'soil', 'garden fresh',
+      // Liver & high vitamin A
+      'liver', 'liver pâté', 'liverwurst', 'cod liver oil',
+      'retinyl palmitate', 'retinol', 'vitamin a palmitate',
+      // Herbal teas & supplements (many unsafe)
+      'herbal supplement', 'herbal remedy', 'kava', 'comfrey', 'pennyroyal',
+      'black cohosh', 'blue cohosh', 'dong quai', 'ephedra', 'yohimbe',
+      'saw palmetto', 'goldenseal',
+      // Artificial sweeteners (some)
+      'saccharin', 'cyclamate',
+      // High-sodium/preserved foods
+      'msg', 'monosodium glutamate', 'sodium nitrite', 'sodium nitrate',
+      // Other high-risk items
+      'raw bean sprouts', 'unpasteurized honey', 'quinine', 'tonic water with quinine',
+    ],
+    cautionIngredients: [
+      // Moderate-mercury fish (limit consumption)
+      'tuna', 'albacore tuna', 'white tuna', 'yellowfin tuna', 'ahi tuna',
+      'sea bass', 'grouper', 'snapper', 'halibut', 'spanish mackerel',
+      'bluefish', 'tilefish',
+      // Caffeine (limit to 200mg/day)
+      'caffeine', 'coffee', 'black tea', 'green tea', 'cola', 'soda',
+      'chocolate', 'cocoa', 'espresso', 'cappuccino', 'latte',
+      // Processed meats (high sodium/nitrates)
+      'bacon', 'sausage', 'ham', 'cured meat', 'smoked meat',
+      // Soft-serve ice cream (listeria risk if machine not clean)
+      'soft serve', 'soft-serve ice cream', 'frozen yogurt machine',
+      // High-sodium foods
+      'canned soup', 'instant noodles', 'ramen', 'soy sauce',
+      'pickled', 'cured', 'brined',
+      // Certain fish (moderate intake)
+      'canned tuna', 'fish sticks', 'imitation crab',
+      // Artificial sweeteners (limit)
+      'aspartame', 'sucralose', 'acesulfame potassium', 'neotame',
+      'stevia', 'sugar alcohol', 'sorbitol', 'xylitol', 'erythritol',
+      // Processed foods (high sodium/additives)
+      'canned', 'preserved', 'instant', 'packaged',
+      // Herbal teas (many unknown safety)
+      'herbal tea', 'chamomile tea', 'peppermint tea', 'ginger tea',
+      'raspberry leaf tea', 'nettle tea',
+      // Licorice & anise
+      'licorice', 'licorice root', 'anise', 'star anise', 'fennel',
+      // Excessive sugar
+      'high fructose corn syrup', 'corn syrup', 'dextrose',
+      // Certain nuts (aflatoxin risk if moldy)
+      'peanut', 'peanut butter',
+      // Raw honey (botulism risk - though minimal for adults)
+      'honey', 'raw honey',
+      // Certain oils in excess
+      'fish oil supplement', 'omega-3 supplement',
+      // Smoked foods
+      'smoked', 'smoke flavoring',
+      // Certain spices in large amounts
+      'cinnamon', 'nutmeg', 'paprika', 'chili powder',
+      // Processed cheese
+      'american cheese', 'cheese product', 'cheese spread',
+      // Blue-veined cheese
+      'blue cheese', 'stilton', 'danish blue',
+      // Street food/buffet items (food safety concerns)
+      'buffet', 'salad bar item',
+    ],
+  ),
 ];
 
 /// Gets a profile by its ID
