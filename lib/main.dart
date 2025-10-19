@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'screens/history_screen.dart';
 import 'screens/profiles_screen.dart';
@@ -7,8 +8,12 @@ import 'screens/search_screen.dart';
 import 'screens/settings_screen.dart';
 import 'services/hive_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Google Mobile Ads
+  await MobileAds.instance.initialize();
+  
   runApp(const LabelScoutApp());
 }
 

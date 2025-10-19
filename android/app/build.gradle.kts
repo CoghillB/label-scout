@@ -38,6 +38,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        multiDexEnabled = true
     }
 
     signingConfigs {
@@ -54,6 +55,16 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
+            // Control code shrinking/obfuscation via project property 'enableMinify'.
+            // Set -PenableMinify=true when running Gradle to enable minification and resource shrinking.
+            val enableMinify: String? = project.findProperty("enableMinify") as String?
+            val minifyEnabled = enableMinify?.toBoolean() ?: false
+            isMinifyEnabled = minifyEnabled
+            isShrinkResources = minifyEnabled
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
