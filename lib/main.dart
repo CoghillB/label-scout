@@ -6,6 +6,8 @@ import 'screens/profiles_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'screens/search_screen.dart';
 import 'screens/settings_screen.dart';
+import 'services/app_lifecycle_reactor.dart';
+import 'services/app_open_ad_manager.dart';
 import 'services/hive_service.dart';
 
 void main() async {
@@ -17,8 +19,36 @@ void main() async {
   runApp(const LabelScoutApp());
 }
 
-class LabelScoutApp extends StatelessWidget {
+class LabelScoutApp extends StatefulWidget {
   const LabelScoutApp({super.key});
+
+  @override
+  State<LabelScoutApp> createState() => _LabelScoutAppState();
+}
+
+class _LabelScoutAppState extends State<LabelScoutApp> {
+  late AppOpenAdManager _appOpenAdManager;
+  late AppLifecycleReactor _appLifecycleReactor;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize App Open Ad Manager
+    _appOpenAdManager = AppOpenAdManager();
+    _appOpenAdManager.loadAd();
+    
+    // Initialize lifecycle reactor to show ads on app resume
+    _appLifecycleReactor = AppLifecycleReactor(
+      appOpenAdManager: _appOpenAdManager,
+    );
+    _appLifecycleReactor.listenToAppStateChanges();
+  }
+
+  @override
+  void dispose() {
+    _appOpenAdManager.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

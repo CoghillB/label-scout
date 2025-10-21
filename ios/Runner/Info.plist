@@ -49,6 +49,8 @@
 		<string>Label Scout needs camera access to scan product barcodes and analyze ingredients for dietary restrictions.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Label Scout may need access to your photo library to scan barcodes from images.</string>
+		<key>GADApplicationIdentifier</key>
+		<string>ca-app-pub-6648737877378523~1142671831</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
 	</dict>
