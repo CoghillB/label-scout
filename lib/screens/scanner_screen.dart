@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../services/profile_service.dart';
-import '../widgets/ad_placeholder.dart';
 import 'barcode_scanner_view.dart';
 
 /// Main scanner screen with a button to launch the barcode scanner
@@ -242,11 +241,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
               ),
               const SizedBox(height: 24),
               
-              // Ad placeholder (shown only for free users)
-              const AdPlaceholder(
-                size: AdSize.banner,
-                margin: EdgeInsets.symmetric(vertical: 12),
-              ),
+              // // Ad placeholder (shown only for free users)
+              // const AdPlaceholder(
+              //   size: AdSize.banner,
+              //   margin: EdgeInsets.symmetric(vertical: 12),
+              // ),
               
               // Tip text
               Container(
