@@ -253,7 +253,7 @@ version: 1.0.0+1  # Update before each release
 
 **iOS:**
 - 6.7" Display (iPhone 15 Pro Max) - 1290 x 2796 px
-- 6.5" Display (iPhone 11 Pro Max) - 1242 x 2688 px  
+- 6.5" Display (iPhone 11 Pro Max) - 1242 x 2688 px
 - 5.5" Display (iPhone 8 Plus) - 1242 x 2208 px
 - 12.9" iPad Pro - 2048 x 2732 px
 

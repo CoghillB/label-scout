@@ -5,6 +5,7 @@ import '../services/food_api_service.dart';
 import '../services/ingredient_analysis_service.dart';
 import '../services/pro_status_service.dart';
 import '../services/profile_service.dart';
+import '../services/search_history_service.dart';
 import 'result_screen.dart';
 import 'upgrade_screen.dart';
 
@@ -21,11 +22,15 @@ class _SearchScreenState extends State<SearchScreen> {
   final IngredientAnalysisService _analysisService = IngredientAnalysisService();
   final ProfileService _profileService = ProfileService();
   final ProStatusService _proStatusService = ProStatusService();
+  final SearchHistoryService _searchHistoryService = SearchHistoryService();
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
 
   List<Map<String, dynamic>> _searchResults = [];
+  List<String> _searchSuggestions = [];
   bool _isSearching = false;
   bool _hasSearched = false;
+  bool _showSuggestions = false;
   String? _error;
   List<DietProfile> _activeProfiles = [];
   bool _isProUser = false;
@@ -34,12 +39,46 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     super.initState();
     _loadActiveProfiles();
+    _loadInitialSuggestions();
+    
+    // Listen to focus changes to show/hide suggestions
+    _searchFocusNode.addListener(() {
+      if (_searchFocusNode.hasFocus && _searchController.text.isEmpty) {
+        _loadSuggestions('');
+      } else if (!_searchFocusNode.hasFocus) {
+        setState(() {
+          _showSuggestions = false;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
+  }
+
+  /// Load initial recent searches
+  Future<void> _loadInitialSuggestions() async {
+    final suggestions = await _searchHistoryService.getSearchHistory();
+    if (mounted) {
+      setState(() {
+        _searchSuggestions = suggestions.take(10).toList();
+      });
+    }
+  }
+
+  /// Load search suggestions based on current query
+  Future<void> _loadSuggestions(String query) async {
+    final suggestions = await _searchHistoryService.getSearchSuggestions(query);
+    if (mounted) {
+      setState(() {
+        _searchSuggestions = suggestions;
+        _showSuggestions = suggestions.isNotEmpty;
+      });
+    }
   }
 
   /// Load active dietary profiles
@@ -77,11 +116,15 @@ class _SearchScreenState extends State<SearchScreen> {
       return;
     }
 
+    // Save to search history
+    await _searchHistoryService.saveSearch(query.trim());
+
     setState(() {
       _isSearching = true;
       _hasSearched = false;
       _error = null;
       _searchResults = [];
+      _showSuggestions = false; // Hide suggestions when searching
     });
 
     try {
@@ -184,14 +227,16 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
       body: Column(
         children: [
-          // Search bar
+          // Search bar with suggestions
           Container(
             padding: const EdgeInsets.all(16),
             color: Colors.white,
             child: Column(
               children: [
+                // Search input field
                 TextField(
                   controller: _searchController,
+                  focusNode: _searchFocusNode,
                   decoration: InputDecoration(
                     hintText: 'Search for food products...',
                     prefixIcon: const Icon(Icons.search),
@@ -204,6 +249,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 _searchResults = [];
                                 _hasSearched = false;
                                 _error = null;
+                                _showSuggestions = false;
                               });
                             },
                           )
@@ -214,19 +260,82 @@ class _SearchScreenState extends State<SearchScreen> {
                     filled: true,
                     fillColor: Colors.grey[100],
                   ),
-                  onSubmitted: _searchProducts,
+                  onSubmitted: (value) {
+                    _searchProducts(value);
+                    _searchFocusNode.unfocus();
+                  },
                   textInputAction: TextInputAction.search,
                   onChanged: (value) {
                     setState(() {}); // Update to show/hide clear button
+                    _loadSuggestions(value);
                   },
                 ),
+                
+                // Suggestions dropdown
+                if (_showSuggestions && _searchSuggestions.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.only(top: 4),
+                    constraints: const BoxConstraints(maxHeight: 250),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey[300]!),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      itemCount: _searchSuggestions.length,
+                      itemBuilder: (context, index) {
+                        final suggestion = _searchSuggestions[index];
+                        return ListTile(
+                          dense: true,
+                          leading: Icon(
+                            Icons.history,
+                            color: Colors.grey[600],
+                            size: 20,
+                          ),
+                          title: Text(
+                            suggestion,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(
+                              Icons.close,
+                              size: 18,
+                              color: Colors.grey[400],
+                            ),
+                            onPressed: () async {
+                              await _searchHistoryService.removeSearch(suggestion);
+                              _loadSuggestions(_searchController.text);
+                            },
+                          ),
+                          onTap: () {
+                            _searchController.text = suggestion;
+                            _searchProducts(suggestion);
+                            _searchFocusNode.unfocus();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: _isSearching
                         ? null
-                        : () => _searchProducts(_searchController.text),
+                        : () {
+                            _searchProducts(_searchController.text);
+                            _searchFocusNode.unfocus();
+                          },
                     icon: _isSearching
                         ? const SizedBox(
                             width: 20,
