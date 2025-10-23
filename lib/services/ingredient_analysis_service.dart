@@ -2,6 +2,20 @@ import '../models/diet_profile.dart';
 
 /// Service for analyzing ingredients against dietary profiles
 class IngredientAnalysisService {
+  /// Checks if a target ingredient is present in the ingredients text
+  /// Uses word boundary matching to avoid false positives
+  /// For example, "oat" won't match "goat" or "boat"
+  bool _containsIngredient(String ingredientsText, String targetIngredient) {
+    final ingredientsLower = ingredientsText.toLowerCase();
+    final targetLower = targetIngredient.toLowerCase();
+    
+    // Create a regex pattern with word boundaries
+    // \b matches word boundaries (spaces, punctuation, start/end of string)
+    final pattern = RegExp(r'\b' + RegExp.escape(targetLower) + r'\b');
+    
+    return pattern.hasMatch(ingredientsLower);
+  }
+
   /// Analyzes ingredients against a single profile
   /// Returns 'avoid' if any avoid ingredients are found
   /// Returns 'caution' if any caution ingredients are found
@@ -11,18 +25,16 @@ class IngredientAnalysisService {
       return 'unknown';
     }
 
-    final ingredientsLower = ingredientsText.toLowerCase();
-
     // Check for avoid ingredients
     for (final avoid in profile.avoidIngredients) {
-      if (ingredientsLower.contains(avoid.toLowerCase())) {
+      if (_containsIngredient(ingredientsText, avoid)) {
         return 'avoid';
       }
     }
 
     // Check for caution ingredients
     for (final caution in profile.cautionIngredients) {
-      if (ingredientsLower.contains(caution.toLowerCase())) {
+      if (_containsIngredient(ingredientsText, caution)) {
         return 'caution';
       }
     }
@@ -76,19 +88,18 @@ class IngredientAnalysisService {
       return [];
     }
 
-    final ingredientsLower = ingredientsText.toLowerCase();
     final flagged = <String>[];
 
     // Check avoid ingredients
     for (final avoid in profile.avoidIngredients) {
-      if (ingredientsLower.contains(avoid.toLowerCase())) {
+      if (_containsIngredient(ingredientsText, avoid)) {
         flagged.add('❌ $avoid');
       }
     }
 
     // Check caution ingredients
     for (final caution in profile.cautionIngredients) {
-      if (ingredientsLower.contains(caution.toLowerCase())) {
+      if (_containsIngredient(ingredientsText, caution)) {
         flagged.add('⚠️ $caution');
       }
     }
@@ -123,9 +134,9 @@ class IngredientAnalysisService {
       case 'caution':
         return 'Caution Required';
       case 'unknown':
-        return 'Insufficient Information';
+        return 'No Ingredient Information Available';
       default:
-        return 'Unknown Status';
+        return 'Unable to Analyze';
     }
   }
 }

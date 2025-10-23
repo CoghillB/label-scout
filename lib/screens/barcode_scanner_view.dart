@@ -160,7 +160,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Error'),
+        title: const Text('Product Not Found'),
         content: Text(error),
         actions: [
           TextButton(

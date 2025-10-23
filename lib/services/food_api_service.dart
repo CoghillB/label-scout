@@ -27,20 +27,20 @@ class FoodApiService {
         // Check if product was found
         final status = data['status'] as int?;
         if (status == 0) {
-          throw Exception('Product not found for barcode: $barcode');
+          throw Exception('This product isn\'t in our database yet.\n\nTry checking the ingredients label on the package directly, or you can help by adding this product to Open Food Facts.');
         }
         
         return data;
       } else if (response.statusCode == 404) {
-        throw Exception('Product not found for barcode: $barcode');
+        throw Exception('This product isn\'t in our database yet.\n\nTry checking the ingredients label on the package directly, or you can help by adding this product to Open Food Facts.');
       } else {
-        throw Exception('Failed to fetch product: HTTP ${response.statusCode}');
+        throw Exception('Unable to connect to the product database. Please check your internet connection and try again.');
       }
     } catch (e) {
       if (e is Exception) {
         rethrow;
       }
-      throw Exception('Error fetching product data: $e');
+      throw Exception('Something went wrong while loading product information. Please try again.');
     }
   }
   
@@ -161,13 +161,13 @@ class FoodApiService {
           };
         }).toList();
       } else {
-        throw Exception('Failed to search products: HTTP ${response.statusCode}');
+        throw Exception('Unable to search the product database. Please check your internet connection and try again.');
       }
     } catch (e) {
       if (e is Exception) {
         rethrow;
       }
-      throw Exception('Error searching products: $e');
+      throw Exception('Something went wrong while searching. Please try again.');
     }
   }
   

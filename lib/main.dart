@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'screens/history_screen.dart';
 import 'screens/profiles_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'screens/search_screen.dart';
 import 'screens/settings_screen.dart';
-import 'services/app_lifecycle_reactor.dart';
-import 'services/app_open_ad_manager.dart';
 import 'services/hive_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Google Mobile Ads
-  await MobileAds.instance.initialize();
   
   runApp(const LabelScoutApp());
 }
@@ -27,29 +21,6 @@ class LabelScoutApp extends StatefulWidget {
 }
 
 class _LabelScoutAppState extends State<LabelScoutApp> {
-  late AppOpenAdManager _appOpenAdManager;
-  late AppLifecycleReactor _appLifecycleReactor;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize App Open Ad Manager
-    _appOpenAdManager = AppOpenAdManager();
-    _appOpenAdManager.loadAd();
-    
-    // Initialize lifecycle reactor to show ads on app resume
-    _appLifecycleReactor = AppLifecycleReactor(
-      appOpenAdManager: _appOpenAdManager,
-    );
-    _appLifecycleReactor.listenToAppStateChanges();
-  }
-
-  @override
-  void dispose() {
-    _appOpenAdManager.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

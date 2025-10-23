@@ -44,20 +44,27 @@ final List<DietProfile> predefinedProfiles = [
       // Wheat varieties
       'durum', 'semolina', 'spelt', 'kamut', 'einkorn', 'farro', 'graham',
       'bulgur', 'couscous', 'seitan', 'wheat germ', 'wheat bran',
+      'wheat flour', 'whole wheat flour', 'enriched flour', 'white flour',
+      'all-purpose flour', 'bread flour', 'cake flour', 'pastry flour',
+      'self-rising flour', 'graham flour',
       // Barley products
       'barley malt', 'malt extract', 'malt syrup', 'malt flavoring',
-      'malt vinegar',
-      // Common sources
-      'flour', 'bread', 'pasta', 'cereals containing gluten',
+      'malt vinegar', 'barley flour',
+      // Rye products
+      'rye flour', 'rye bread',
+      // Common wheat-based foods (only specific gluten-containing versions)
+      'wheat bread', 'wheat pasta', 'wheat cereal', 'cereals containing gluten',
       // Hidden sources
       'modified food starch', 'hydrolyzed wheat protein', 'textured vegetable protein',
       'soy sauce', 'teriyaki sauce', 'breadcrumbs', 'croutons',
+      'wheat starch', 'wheat protein',
     ],
     cautionIngredients: [
       'oats', 'oat flour', 'modified starch', 'food starch', 'natural flavoring',
       'artificial flavoring', 'caramel color', 'maltodextrin', 'dextrin',
       'yeast extract', 'hydrolyzed vegetable protein', 'seasonings',
       'spice blends', 'stabilizers', 'emulsifiers', 'thickeners',
+      'starch', 'modified corn starch', 'corn starch',
     ],
   ),
 

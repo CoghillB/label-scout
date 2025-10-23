@@ -241,12 +241,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
               ),
               const SizedBox(height: 24),
               
-              // // Ad placeholder (shown only for free users)
-              // const AdPlaceholder(
-              //   size: AdSize.banner,
-              //   margin: EdgeInsets.symmetric(vertical: 12),
-              // ),
-              
               // Tip text
               Container(
                 padding: const EdgeInsets.all(16),
