@@ -24,8 +24,9 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   final HiveService _hiveService = HiveService();
   final ProfileService _profileService = ProfileService();
   final ProStatusService _proStatusService = ProStatusService();
-  final IngredientAnalysisService _analysisService = IngredientAnalysisService();
-  
+  final IngredientAnalysisService _analysisService =
+      IngredientAnalysisService();
+
   bool _isProcessing = false;
 
   @override
@@ -38,51 +39,70 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
   void _onBarcodeDetect(BarcodeCapture barcodeCapture) async {
     // Prevent multiple simultaneous scans
     if (_isProcessing) return;
-    
+
     final barcode = barcodeCapture.barcodes.firstOrNull;
     if (barcode == null || barcode.rawValue == null) return;
-    
+
     setState(() {
       _isProcessing = true;
     });
-    
+
     final barcodeValue = barcode.rawValue!;
-    
+
     try {
       // Check Pro status and get active profiles
       final isPro = await _proStatusService.isProUser();
       final activeProfiles = await _profileService.getActiveProfiles();
-      
+
       if (activeProfiles.isEmpty) {
         if (mounted) {
           _showNoProfileDialog();
         }
         return;
       }
-      
+
       // Fetch product data from API
-      final productData = await _foodApiService.fetchProductByBarcode(barcodeValue);
-      
+      final productData = await _foodApiService.fetchProductByBarcode(
+        barcodeValue,
+      );
+
       // Extract product information
-      final productName = _foodApiService.getProductName(productData) ?? 'Unknown Product';
-      final brand = _foodApiService.getProductBrand(productData) ?? 'Unknown Brand';
+      final productName =
+          _foodApiService.getProductName(productData) ?? 'Unknown Product';
+      final brand =
+          _foodApiService.getProductBrand(productData) ?? 'Unknown Brand';
       final ingredientsText = _foodApiService.getIngredientsText(productData);
-      
+
       // Analyze ingredients against profile(s)
       final status = isPro
-          ? _analysisService.analyzeAgainstMultipleProfiles(ingredientsText, activeProfiles)
-          : _analysisService.analyzeAgainstProfile(ingredientsText, activeProfiles.first);
-      
+          ? _analysisService.analyzeAgainstMultipleProfiles(
+              ingredientsText,
+              activeProfiles,
+            )
+          : _analysisService.analyzeAgainstProfile(
+              ingredientsText,
+              activeProfiles.first,
+            );
+
       // Get flagged ingredients for history
       List<String> flaggedIngredients;
       if (isPro) {
-        final flaggedMap = _analysisService.getFlaggedIngredientsMultiProfile(ingredientsText, activeProfiles);
+        final flaggedMap = _analysisService.getFlaggedIngredientsMultiProfile(
+          ingredientsText,
+          activeProfiles,
+        );
         // Flatten all flagged ingredients from all profiles into a single list
-        flaggedIngredients = flaggedMap.values.expand((list) => list).toSet().toList();
+        flaggedIngredients = flaggedMap.values
+            .expand((list) => list)
+            .toSet()
+            .toList();
       } else {
-        flaggedIngredients = _analysisService.getFlaggedIngredients(ingredientsText, activeProfiles.first);
+        flaggedIngredients = _analysisService.getFlaggedIngredients(
+          ingredientsText,
+          activeProfiles.first,
+        );
       }
-      
+
       // Save to scan history
       final historyItem = ScanHistoryItem(
         barcode: barcodeValue,
@@ -91,10 +111,11 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
         resultStatus: status.toUpperCase(),
         flaggedIngredients: flaggedIngredients,
         brand: brand,
-        imageUrl: null, // Optional: Add getImageUrl method to FoodApiService if needed
+        imageUrl:
+            null, // Optional: Add getImageUrl method to FoodApiService if needed
       );
       await _hiveService.saveScanHistory(historyItem);
-      
+
       // Provide haptic feedback based on result
       if (status.toUpperCase() == 'SAFE') {
         await HapticService.success();
@@ -105,7 +126,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
       } else {
         await HapticService.lightImpact();
       }
-      
+
       if (mounted) {
         // Navigate to result screen
         Navigator.pushReplacement(
@@ -121,7 +142,6 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
           ),
         );
       }
-      
     } catch (e) {
       if (mounted) {
         _showErrorDialog(e.toString());
@@ -186,11 +206,8 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
       body: Stack(
         children: [
           // Camera preview
-          MobileScanner(
-            controller: _controller,
-            onDetect: _onBarcodeDetect,
-          ),
-          
+          MobileScanner(controller: _controller, onDetect: _onBarcodeDetect),
+
           // Scanning overlay
           if (_isProcessing)
             Container(
@@ -211,7 +228,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
                 ),
               ),
             ),
-          
+
           // Scanning guide overlay
           if (!_isProcessing)
             Center(
@@ -219,15 +236,12 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
                 width: 250,
                 height: 250,
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 3,
-                  ),
+                  border: Border.all(color: Colors.white, width: 3),
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
             ),
-          
+
           // Instructions
           if (!_isProcessing)
             Positioned(
@@ -243,10 +257,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
                 ),
                 child: const Text(
                   'Position the barcode within the frame',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
               ),

@@ -9,7 +9,7 @@ import 'services/hive_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   runApp(const LabelScoutApp());
 }
 
@@ -30,16 +30,24 @@ class _LabelScoutAppState extends State<LabelScoutApp> {
         // Enhanced color palette with green and brown harmony: A5B68D, 6B8E4E, B17F59, C1CFA1, EDE8DC
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFFA5B68D), // Muted Green
-          primary: const Color(0xFF6B8E4E), // Rich Forest Green (primary accent)
+          primary: const Color(
+            0xFF6B8E4E,
+          ), // Rich Forest Green (primary accent)
           secondary: const Color(0xFF8B5E3C), // Warm Brown (secondary accent)
           tertiary: const Color(0xFF9CB87C), // Light Sage Green
-          surface: const Color(0xFFFAF8F3), // Brighter Off-White (enhanced from EDE8DC)
+          surface: const Color(
+            0xFFFAF8F3,
+          ), // Brighter Off-White (enhanced from EDE8DC)
           onPrimary: Colors.white,
           onSecondary: Colors.white,
-          onSurface: const Color(0xFF2C2C2C), // Dark gray for better text contrast
+          onSurface: const Color(
+            0xFF2C2C2C,
+          ), // Dark gray for better text contrast
           outline: const Color(0xFFA5B68D), // Muted green for borders
         ),
-        scaffoldBackgroundColor: const Color(0xFFF5F7F0), // Subtle green-tinted off-white
+        scaffoldBackgroundColor: const Color(
+          0xFFF5F7F0,
+        ), // Subtle green-tinted off-white
         cardColor: Colors.white,
         // Enhanced AppBar with rich green
         appBarTheme: const AppBarTheme(
@@ -94,10 +102,7 @@ class _LabelScoutAppState extends State<LabelScoutApp> {
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: const BorderSide(
-              color: Color(0xFFE0E0E0),
-              width: 1,
-            ),
+            side: const BorderSide(color: Color(0xFFE0E0E0), width: 1),
           ),
           color: Colors.white,
         ),
@@ -111,7 +116,9 @@ class _LabelScoutAppState extends State<LabelScoutApp> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFFD0D5CC)), // Green-gray
+            borderSide: const BorderSide(
+              color: Color(0xFFD0D5CC),
+            ), // Green-gray
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -174,18 +181,9 @@ class _LabelScoutAppState extends State<LabelScoutApp> {
             fontWeight: FontWeight.w500,
             color: Color(0xFF2C2C2C),
           ),
-          bodyLarge: TextStyle(
-            fontSize: 16,
-            color: Color(0xFF3C3C3C),
-          ),
-          bodyMedium: TextStyle(
-            fontSize: 14,
-            color: Color(0xFF3C3C3C),
-          ),
-          bodySmall: TextStyle(
-            fontSize: 12,
-            color: Color(0xFF6B6B6B),
-          ),
+          bodyLarge: TextStyle(fontSize: 16, color: Color(0xFF3C3C3C)),
+          bodyMedium: TextStyle(fontSize: 14, color: Color(0xFF3C3C3C)),
+          bodySmall: TextStyle(fontSize: 12, color: Color(0xFF6B6B6B)),
         ),
         useMaterial3: true,
       ),
@@ -216,7 +214,7 @@ class _AppInitializerState extends State<AppInitializer> {
     try {
       // Initialize Hive database
       await HiveService.initialize();
-      
+
       if (mounted) {
         setState(() {
           _initialized = true;
@@ -345,18 +343,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             icon: Icon(Icons.qr_code_scanner),
             label: 'Scanner',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profiles',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'History',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profiles'),
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'Settings',

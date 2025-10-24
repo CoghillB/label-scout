@@ -8,11 +8,11 @@ class IngredientAnalysisService {
   bool _containsIngredient(String ingredientsText, String targetIngredient) {
     final ingredientsLower = ingredientsText.toLowerCase();
     final targetLower = targetIngredient.toLowerCase();
-    
+
     // Create a regex pattern with word boundaries
     // \b matches word boundaries (spaces, punctuation, start/end of string)
     final pattern = RegExp(r'\b' + RegExp.escape(targetLower) + r'\b');
-    
+
     return pattern.hasMatch(ingredientsLower);
   }
 

@@ -12,7 +12,7 @@ class ResultScreen extends StatefulWidget {
   final String productName;
   final String brand;
   final String? ingredientsText;
-  final String status; // 'safe' or 'avoid' - based on ingredient analysis
+  final String status; // 'safe', 'caution', or 'avoid' - based on ingredient analysis
 
   const ResultScreen({
     super.key,
@@ -157,6 +157,30 @@ class _ResultScreenState extends State<ResultScreen> {
   @override
   Widget build(BuildContext context) {
     final isSafe = widget.status == 'safe';
+    final isCaution = widget.status == 'caution';
+    
+    // Determine colors and icon based on status
+    Color statusColor;
+    Color backgroundColor;
+    IconData statusIcon;
+    String statusMessage;
+    
+    if (isSafe) {
+      statusColor = Colors.green;
+      backgroundColor = Colors.green.withValues(alpha: 0.1);
+      statusIcon = Icons.check_circle;
+      statusMessage = 'Safe to Consume';
+    } else if (isCaution) {
+      statusColor = Colors.orange;
+      backgroundColor = Colors.orange.withValues(alpha: 0.1);
+      statusIcon = Icons.warning;
+      statusMessage = 'Caution Required';
+    } else {
+      statusColor = Colors.red;
+      backgroundColor = Colors.red.withValues(alpha: 0.1);
+      statusIcon = Icons.cancel;
+      statusMessage = 'Avoid This Product';
+    }
     
     return Scaffold(
       appBar: AppBar(
@@ -170,26 +194,35 @@ class _ResultScreenState extends State<ResultScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: isSafe 
-                    ? Colors.green.withValues(alpha: 0.1)
-                    : Colors.red.withValues(alpha: 0.1),
+                color: backgroundColor,
               ),
               child: Column(
                 children: [
                   Icon(
-                    isSafe ? Icons.check_circle : Icons.cancel,
+                    statusIcon,
                     size: 80,
-                    color: isSafe ? Colors.green : Colors.red,
+                    color: statusColor,
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    isSafe ? 'Safe to Consume' : 'Avoid This Product',
+                    statusMessage,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: isSafe ? Colors.green[800] : Colors.red[800],
+                      color: statusColor.withValues(alpha: 0.8),
                     ),
                   ),
+                  if (isCaution) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'Contains ingredients that may require attention',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: statusColor.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
