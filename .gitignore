@@ -11,7 +11,10 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+
+# Markdown files - ignore all except README.md
 *.md
+!README.md
 
 # Keystore files - DO NOT COMMIT THESE
 *.jks
