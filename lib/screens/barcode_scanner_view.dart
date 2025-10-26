@@ -8,6 +8,7 @@ import '../services/hive_service.dart';
 import '../services/ingredient_analysis_service.dart';
 import '../services/pro_status_service.dart';
 import '../services/profile_service.dart';
+import 'product_not_found_screen.dart';
 import 'result_screen.dart';
 
 /// Full-screen barcode scanner view using the device camera
@@ -144,7 +145,13 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
       }
     } catch (e) {
       if (mounted) {
-        _showErrorDialog(e.toString());
+        // Navigate to Product Not Found screen instead of showing error dialog
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductNotFoundScreen(barcode: barcodeValue),
+          ),
+        );
       }
     } finally {
       setState(() {
@@ -168,23 +175,6 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
               Navigator.pop(context); // Close dialog
               Navigator.pop(context); // Return to scanner screen
             },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Shows error dialog
-  void _showErrorDialog(String error) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Product Not Found'),
-        content: Text(error),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
             child: const Text('OK'),
           ),
         ],
