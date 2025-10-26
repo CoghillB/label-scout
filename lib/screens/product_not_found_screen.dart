@@ -9,10 +9,7 @@ import 'upgrade_screen.dart';
 class ProductNotFoundScreen extends StatefulWidget {
   final String barcode;
 
-  const ProductNotFoundScreen({
-    super.key,
-    required this.barcode,
-  });
+  const ProductNotFoundScreen({super.key, required this.barcode});
 
   @override
   State<ProductNotFoundScreen> createState() => _ProductNotFoundScreenState();
@@ -62,9 +59,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Product Not Found'),
-      ),
+      appBar: AppBar(title: const Text('Product Not Found')),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -73,20 +68,13 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
               const SizedBox(height: 20),
 
               // Icon
-              Icon(
-                Icons.search_off,
-                size: 100,
-                color: Colors.orange[700],
-              ),
+              Icon(Icons.search_off, size: 100, color: Colors.orange[700]),
               const SizedBox(height: 24),
 
               // Title
               const Text(
                 'Product Not Found',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -106,10 +94,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
                   children: [
                     const Text(
                       'Barcode: ',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     Text(
                       widget.barcode,
@@ -122,9 +107,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () {
-                        Clipboard.setData(
-                          ClipboardData(text: widget.barcode),
-                        );
+                        Clipboard.setData(ClipboardData(text: widget.barcode));
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Barcode copied to clipboard'),
@@ -162,11 +145,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: Colors.blue[700],
-                      size: 24,
-                    ),
+                    Icon(Icons.info_outline, color: Colors.blue[700], size: 24),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -243,10 +222,7 @@ class _ProductNotFoundScreenState extends State<ProductNotFoundScreen> {
               Text(
                 'Our database is powered by Open Food Facts, '
                 'a collaborative project with millions of products.',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
             ],

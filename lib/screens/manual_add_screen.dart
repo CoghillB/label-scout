@@ -8,10 +8,7 @@ import '../services/hive_service.dart';
 class ManualAddScreen extends StatefulWidget {
   final String barcode;
 
-  const ManualAddScreen({
-    super.key,
-    required this.barcode,
-  });
+  const ManualAddScreen({super.key, required this.barcode});
 
   @override
   State<ManualAddScreen> createState() => _ManualAddScreenState();
@@ -96,9 +93,7 @@ class _ManualAddScreenState extends State<ManualAddScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Product Manually'),
-      ),
+      appBar: AppBar(title: const Text('Add Product Manually')),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -182,10 +177,7 @@ class _ManualAddScreenState extends State<ManualAddScreen> {
                 // My Rating section
                 const Text(
                   'My Rating *',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -226,10 +218,7 @@ class _ManualAddScreenState extends State<ManualAddScreen> {
                 // Category dropdown
                 const Text(
                   'Category *',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
@@ -264,8 +253,9 @@ class _ManualAddScreenState extends State<ManualAddScreen> {
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
                             ),
                           )
                         : const Icon(Icons.save),
@@ -292,10 +282,7 @@ class _ManualAddScreenState extends State<ManualAddScreen> {
                         : () {
                             Navigator.pop(context);
                           },
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    child: const Text('Cancel', style: TextStyle(fontSize: 16)),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
