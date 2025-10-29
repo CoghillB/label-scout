@@ -12,11 +12,21 @@ class FoodApiService {
   /// Throws an exception if the request fails or product is not found
   Future<Map<String, dynamic>> fetchProductByBarcode(String barcode) async {
     try {
-      final url = Uri.parse('$_baseUrl/product/$barcode.json');
+      // Request English language data by using the en. subdomain
+      final url = Uri.parse('$_baseUrl/product/$barcode.json').replace(
+        queryParameters: {
+          'lc': 'en', // Language code for English
+          'fields':
+              'product_name,product_name_en,brands,ingredients_text,ingredients_text_en,image_url,image_front_url,image_small_url,code',
+        },
+      );
 
       final response = await http.get(
         url,
-        headers: {'User-Agent': 'LabelScout - Flutter App - Version 1.0'},
+        headers: {
+          'User-Agent': 'LabelScout - Flutter App - Version 1.0',
+          'Accept-Language': 'en-US,en;q=0.9', // Prefer English responses
+        },
       );
 
       if (response.statusCode == 200) {
@@ -53,15 +63,20 @@ class FoodApiService {
   /// Extracts the ingredients text from the API response
   ///
   /// Returns the ingredients as a string, or null if not available
+  /// Always prioritizes English version
   String? getIngredientsText(Map<String, dynamic> productData) {
     try {
       final product = productData['product'] as Map<String, dynamic>?;
       if (product == null) return null;
 
-      // Try to get ingredients in English first
-      final ingredientsText =
-          product['ingredients_text_en'] as String? ??
-          product['ingredients_text'] as String?;
+      // ALWAYS prioritize English version first
+      final ingredientsText = product['ingredients_text_en'] as String?;
+      
+      // If no English version exists, return null instead of falling back to other languages
+      // This prevents French or other language ingredients from appearing
+      if (ingredientsText == null || ingredientsText.trim().isEmpty) {
+        return null;
+      }
 
       return ingredientsText;
     } catch (e) {
@@ -70,13 +85,28 @@ class FoodApiService {
   }
 
   /// Extracts the product name from the API response
+  /// Always prioritizes English version
   String? getProductName(Map<String, dynamic> productData) {
     try {
       final product = productData['product'] as Map<String, dynamic>?;
       if (product == null) return null;
 
-      return product['product_name'] as String? ??
-          product['product_name_en'] as String?;
+      // ALWAYS prioritize English version first
+      final productName = product['product_name_en'] as String?;
+      
+      // If no English name, try generic product_name as last resort
+      // but only if it appears to be English (basic check)
+      if (productName != null && productName.trim().isNotEmpty) {
+        return productName;
+      }
+      
+      // Fallback to generic name only if English version unavailable
+      final genericName = product['product_name'] as String?;
+      if (genericName != null && genericName.trim().isNotEmpty) {
+        return genericName;
+      }
+
+      return null;
     } catch (e) {
       return null;
     }
@@ -135,13 +165,14 @@ class FoodApiService {
   /// Throws an exception if the request fails
   Future<List<Map<String, dynamic>>> searchProducts(String searchTerm) async {
     try {
-      // Use the CGI search endpoint which properly filters by search term
+      // Use the CGI search endpoint with English language specification
       final url = Uri.parse('https://world.openfoodfacts.org/cgi/search.pl')
           .replace(
             queryParameters: {
               'search_terms': searchTerm,
               'json': 'true',
               'page_size': '20',
+              'lc': 'en', // Request English language data
               'fields':
                   'code,product_name,product_name_en,brands,ingredients_text,ingredients_text_en,image_url,image_front_url,image_small_url',
             },
@@ -149,7 +180,10 @@ class FoodApiService {
 
       final response = await http.get(
         url,
-        headers: {'User-Agent': 'LabelScout - Flutter App - Version 1.0'},
+        headers: {
+          'User-Agent': 'LabelScout - Flutter App - Version 1.0',
+          'Accept-Language': 'en-US,en;q=0.9', // Prefer English responses
+        },
       );
 
       if (response.statusCode == 200) {
