@@ -6,7 +6,29 @@ Label Scout is a Flutter mobile application that helps users make informed food 
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.9.2-02569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.9.2-0175C2?logo=dart)](https://dart.dev)
-[![Version](https://img.shields.io/badge/Version-1.0.7-green)](https://github.com/CoghillB/label-scout)
+[![Version](https://img.shields.io/badge/Version-1.0.8-green)](https://github.com/CoghillB/label-scout)
+
+---
+
+## 📢 Latest Release - v1.0.8 (October 29, 2025)
+
+### 🌍 Language Localization Enhancement
+
+**What's Fixed:**
+- **English-First API Requests** - Product data now consistently returns in English language
+- **Language Priority Headers** - Added `Accept-Language` and `lc=en` parameters to all API calls
+- **Improved Product Names** - Product names now prioritize English versions (`product_name_en`)
+- **Better Ingredient Display** - Ingredients text always shows English version when available
+- **Fallback Handling** - Gracefully handles products without English translations
+
+**Why This Matters:**
+Previously, users might see product information in French, Spanish, or other languages depending on the product's origin in the Open Food Facts database. This update ensures a consistent English-language experience for all users.
+
+**Technical Changes:**
+- Updated `food_api_service.dart` with language-specific API parameters
+- Enhanced `getProductName()` to prioritize English product names
+- Enhanced `getIngredientsText()` to return only English ingredient lists
+- Added proper Accept-Language headers to all HTTP requests
 
 ---
 
@@ -66,6 +88,24 @@ Create and manage custom dietary profiles including:
 - **Profile Management** - Create, edit, and delete dietary profiles
 - **Pro Status** - Unlock premium features
 - **Clean Interface** - Intuitive navigation and modern design
+
+---
+
+## 🔄 Recent Updates
+
+### Version 1.0.8 (October 29, 2025)
+- 🌍 **Language Localization** - English-first API requests for consistent language display
+
+### Version 1.0.7 (October 25, 2025)
+- 📦 **Product Not Found Workflow** - Helpful screen when products aren't in database
+- ✍️ **Manual Product Entry** - Pro users can add products manually to lists
+- 💾 **Shopping Memory** - Track any product, even if not in database
+
+### Version 1.0.6 & Earlier
+- ⚠️ **Caution Status Fix** - Natural flavors now correctly show caution instead of avoid
+- 🔍 **Search Feature Fix** - Product search now returns relevant results
+- 👤 **Profile Selection UX** - Improved profile checking and user guidance
+- 📱 **Crash Fixes** - Fixed Google Mobile Ads initialization crash
 
 ---
 
