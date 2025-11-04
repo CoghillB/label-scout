@@ -204,6 +204,26 @@ class _SearchScreenState extends State<SearchScreen> {
         ? _analysisService.analyzeAgainstMultipleProfiles(ingredientsText, _activeProfiles)
         : _analysisService.analyzeAgainstProfile(ingredientsText, _activeProfiles.first);
 
+    // Get flagged ingredients
+    List<String> flaggedIngredients = [];
+    if (_isProUser) {
+      final flaggedMap = _analysisService.getFlaggedIngredientsMultiProfile(
+        ingredientsText,
+        _activeProfiles,
+      );
+      // Flatten the map into a single list
+      flaggedMap.forEach((profileName, ingredients) {
+        flaggedIngredients.addAll(ingredients);
+      });
+      // Remove duplicates
+      flaggedIngredients = flaggedIngredients.toSet().toList();
+    } else {
+      flaggedIngredients = _analysisService.getFlaggedIngredients(
+        ingredientsText,
+        _activeProfiles.first,
+      );
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -213,6 +233,7 @@ class _SearchScreenState extends State<SearchScreen> {
           brand: brand,
           ingredientsText: ingredientsText ?? 'No ingredients listed',
           status: status,
+          flaggedIngredients: flaggedIngredients,
         ),
       ),
     );

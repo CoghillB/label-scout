@@ -13,6 +13,7 @@ class ResultScreen extends StatefulWidget {
   final String brand;
   final String? ingredientsText;
   final String status; // 'safe', 'caution', or 'avoid' - based on ingredient analysis
+  final List<String> flaggedIngredients; // List of ingredients that triggered the status
 
   const ResultScreen({
     super.key,
@@ -21,6 +22,7 @@ class ResultScreen extends StatefulWidget {
     required this.brand,
     this.ingredientsText,
     required this.status,
+    this.flaggedIngredients = const [],
   });
 
   @override
@@ -280,6 +282,122 @@ class _ResultScreenState extends State<ResultScreen> {
                               widget.ingredientsText!,
                               style: const TextStyle(fontSize: 14),
                             ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  
+                  // Flagged Ingredients Section
+                  if (widget.flaggedIngredients.isNotEmpty) ...[
+                    Card(
+                      color: isSafe 
+                          ? Colors.green.withValues(alpha: 0.05)
+                          : (isCaution 
+                              ? Colors.orange.withValues(alpha: 0.05)
+                              : Colors.red.withValues(alpha: 0.05)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  isSafe 
+                                      ? Icons.info_outline
+                                      : (isCaution ? Icons.warning_amber : Icons.dangerous),
+                                  color: statusColor,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  isSafe 
+                                      ? 'Analyzed Ingredients'
+                                      : 'Flagged Ingredients',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: statusColor.withValues(alpha: 0.9),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              isSafe
+                                  ? 'No problematic ingredients detected for your dietary profile.'
+                                  : 'The following ingredients were detected:',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey[700],
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                            if (!isSafe) ...[
+                              const SizedBox(height: 12),
+                              ...widget.flaggedIngredients.map((ingredient) {
+                                final isAvoid = ingredient.startsWith('❌');
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        ingredient.split(' ').first,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: isAvoid ? Colors.red : Colors.orange,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          ingredient.substring(ingredient.indexOf(' ') + 1),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: isAvoid 
+                                                ? Colors.red[900] 
+                                                : Colors.orange[900],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }),
+                              const SizedBox(height: 12),
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: statusColor.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.info,
+                                      size: 16,
+                                      color: statusColor,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        isCaution
+                                            ? 'Caution items may be safe but require your careful consideration.'
+                                            : 'Avoid items should not be consumed based on your dietary restrictions.',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: statusColor.withValues(alpha: 0.9),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),

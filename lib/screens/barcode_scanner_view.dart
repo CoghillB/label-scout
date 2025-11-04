@@ -139,6 +139,7 @@ class _BarcodeScannerViewState extends State<BarcodeScannerView> {
               brand: brand,
               ingredientsText: ingredientsText,
               status: status,
+              flaggedIngredients: flaggedIngredients,
             ),
           ),
         );
